@@ -24,12 +24,21 @@ app.get('/api/search1/:searchquery', (req, res)=> {
   })
 })
 
-//search query for book products (secured)
+//search query for book products (secured by escaping)
 app.get('/api/search2/:searchquery', (req, res)=> {
     const query = '%' + req.params.searchquery + '%';
     const sqlSelect = "SELECT product_name, price, stock FROM CRUDDatabase.books WHERE product_name LIKE " + db.escape(query);
     console.log(sqlSelect);
     db.query(sqlSelect, (err, result) => {
+        if(err) throw err;
+        res.send(result);
+  })
+})
+
+//search query for book products (secured by escaping)
+app.get('/api/search3/:searchquery', (req, res)=> {
+    const sqlSelect = `SELECT product_name, price, stock FROM CRUDDatabase.books WHERE product_name LIKE ?`;
+    db.query(sqlSelect,['%' + req.params.searchquery + '%'], (err, result) => {
         if(err) throw err;
         res.send(result);
   })
